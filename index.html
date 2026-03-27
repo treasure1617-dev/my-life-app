@@ -3,149 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>極簡生活管理</title>
+    <title>極簡生活 3.0 - 智慧對照版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .card { @apply bg-white p-4 rounded-2xl shadow-sm mb-4 border border-gray-100; }
+        .btn-action { @apply flex-1 py-3 px-2 rounded-xl font-bold text-center transition active:scale-95; }
+        .input-style { @apply w-full border border-gray-200 p-2 rounded-lg bg-gray-50 focus:bg-white outline-none focus:border-indigo-500 text-sm; }
+        .budget-tag { @apply text-[10px] px-2 py-0.5 rounded-full font-bold; }
     </style>
 </head>
-<body class="bg-gray-50 pb-20">
+<body class="bg-gray-100 pb-24 text-gray-800">
 
-<div class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
-    <header class="bg-indigo-600 text-white p-4 sticky top-0 z-10 flex justify-between items-center">
-        <h1 class="text-xl font-bold">極簡生活</h1>
-        <button onclick="exportToExcel()" class="bg-indigo-500 px-3 py-1 rounded text-sm">匯出 Excel</button>
+<div class="max-w-md mx-auto">
+    <header class="bg-gradient-to-br from-indigo-600 to-purple-700 text-white p-6 rounded-b-[32px] shadow-lg mb-6 sticky top-0 z-20">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-xl font-black italic">MINIMAL LIFE 3.0</h1>
+            <button onclick="exportData()" class="text-xs bg-white/20 px-3 py-1 rounded-full border border-white/30">匯出 Excel 格式</button>
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+            <div onclick="addWater()" class="bg-white/20 p-2 rounded-xl text-center active:bg-white/40">
+                <p class="text-[9px] opacity-80">飲水</p>
+                <p id="dash-water" class="text-sm font-bold">0ml</p>
+            </div>
+            <div class="bg-white/20 p-2 rounded-xl text-center">
+                <p class="text-[9px] opacity-80">今日運動</p>
+                <p id="dash-sport" class="text-sm font-bold">0m</p>
+            </div>
+            <div class="bg-white/20 p-2 rounded-xl text-center">
+                <p class="text-[9px] opacity-80">昨晚睡眠</p>
+                <p id="dash-sleep" class="text-sm font-bold">0h</p>
+            </div>
+            <div class="bg-white/20 p-2 rounded-xl text-center">
+                <p class="text-[9px] opacity-80">本月預算</p>
+                <p id="dash-budget" class="text-sm font-bold">100%</p>
+            </div>
+        </div>
     </header>
 
-    <div class="p-4 grid grid-cols-3 gap-2 bg-indigo-50">
-        <div class="bg-white p-2 rounded shadow text-center">
-            <p class="text-xs text-gray-500">今日飲水</p>
-            <p id="dash-water" class="text-lg font-bold text-blue-600">0 ml</p>
-        </div>
-        <div class="bg-white p-2 rounded shadow text-center">
-            <p class="text-xs text-gray-500">今日運動</p>
-            <p id="dash-sport" class="text-lg font-bold text-green-600">0 min</p>
-        </div>
-        <div class="bg-white p-2 rounded shadow text-center">
-            <p class="text-xs text-gray-500">睡眠時間</p>
-            <p id="dash-sleep" class="text-lg font-bold text-purple-600">0 hr</p>
-        </div>
-    </div>
-
-    <main class="p-4">
-        <div class="mb-4">
-            <label class="block text-sm font-medium mb-1">類別</label>
-            <select id="main-cat" class="w-full border p-2 rounded bg-white">
-                <option value="健康">健康 (飲食/飲水/看診)</option>
-                <option value="生活">生活 (運動/睡眠/體重/生理期)</option>
-                <option value="財務">財務 (支出/預算)</option>
-                <option value="物品">物品 (庫存/購物)</option>
-            </select>
-        </div>
-
-        <div id="dynamic-fields" class="space-y-3">
-            <input type="text" id="field-content" placeholder="內容 (如：晚餐內容、藥單、診所)" class="w-full border p-2 rounded">
+    <main class="px-4">
+        <section class="card">
+            <h2 class="font-black text-indigo-600 mb-3 flex items-center">🩺 健康生活對照</h2>
+            <div class="flex gap-2 mb-2">
+                <select id="health-sub" class="input-style w-1/3" onchange="checkPeriodType()">
+                    <option>飲食</option><option>看診</option><option>運動</option>
+                    <option>睡眠</option><option>排便</option><option>體重</option>
+                    <option value="生理期-開始">生理期-開始</option>
+                    <option value="生理期-結束">生理期-結束</option>
+                    <option>其他</option>
+                </select>
+                <input type="text" id="health-food" placeholder="攝取內容 (如:冰拿鐵)" class="input-style w-2/3">
+            </div>
+            <input type="text" id="health-symptom" placeholder="身體症狀 (如:胃脹氣、牙痛、量多)" class="input-style mb-2">
+            <textarea id="health-note" placeholder="客觀觀察 (藥單內容、運動項目、睡眠品質)" class="input-style h-16 mb-2"></textarea>
+            
             <div class="flex gap-2">
-                <input type="number" id="field-value" placeholder="數值" class="w-1/2 border p-2 rounded">
-                <input type="text" id="field-unit" placeholder="單位 (ml/min/元)" class="w-1/2 border p-2 rounded">
+                <button id="timer-btn" onclick="toggleTimer()" class="btn-action bg-green-500 text-white">開始計時</button>
+                <button onclick="saveHealth()" class="btn-action bg-indigo-600 text-white">儲存狀態</button>
             </div>
-            <textarea id="field-note" placeholder="備註觀察、症狀說明..." class="w-full border p-2 rounded h-20"></textarea>
-            <input type="datetime-local" id="field-time" class="w-full border p-2 rounded">
-        </div>
+            <p id="timer-display" class="text-center text-[10px] mt-2 text-gray-400 font-mono"></p>
+        </section>
 
-        <button onclick="saveRecord()" class="w-full bg-indigo-600 text-white py-3 rounded-xl mt-4 font-bold shadow-lg active:scale-95 transition">儲存紀錄</button>
+        <section class="card">
+            <h2 class="font-black text-orange-600 mb-3 flex items-center">💰 支出與預算連動</h2>
+            <select id="fin-sub" class="input-style mb-2" onchange="updateBudgetInfo()">
+                <option value="約會">約會 (4.5k)</option><option value="飲食">飲食 (7.5k)</option>
+                <option value="油費/交通">油費/交通 (0.7k)</option><option value="水電瓦斯電費公費">水電瓦斯 (1.5k)</option>
+                <option value="手機">手機 (0.9k)</option><option value="其餘家用開銷">其餘家用 (0.8k)</option>
+                <option value="醫療">醫療 (1.6k)</option><option value="運動">運動 (6k)</option>
+                <option value="物理治療/美甲/醫美">醫美/美甲 (1.9k)</option>
+                <option value="上課">上課/材料 (3.2k)</option><option value="購物">購物/日耗 (2.4k)</option><option value="保險稅等費用">保險稅 (3.5k)</option>
+            </select>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <input type="number" id="fin-amount" placeholder="金額" class="input-style">
+                <select id="fin-pay" class="input-style">
+                    <option>現金</option><option>LINE Pay</option><option>Apple Pay</option><option>台灣Pay</option><option>街口</option>
+                </select>
+            </div>
+            <input type="text" id="fin-item" placeholder="項目明細" class="input-style mb-2">
+            <div id="budget-left" class="bg-gray-100 p-2 rounded-lg text-center mb-3">
+                <span id="budget-text" class="text-sm font-bold">剩餘: $ --</span>
+            </div>
+            <button onclick="saveFinance()" class="w-full btn-action bg-orange-500 text-white">儲存支出</button>
+        </section>
+
+        <section class="card">
+            <h2 class="font-black text-pink-600 mb-3 flex items-center">🛍️ 購物紀錄</h2>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <select id="buy-sub" class="input-style">
+                    <option>衣服</option><option>包包</option><option>鞋子</option><option>化妝品</option><option>保養品</option>
+                </select>
+                <input type="text" id="buy-shop" placeholder="店家" class="input-style">
+            </div>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <input type="text" id="buy-name" placeholder="品項名稱" class="input-style">
+                <input type="number" id="buy-amount" placeholder="金額" class="input-style">
+            </div>
+            <textarea id="buy-note" placeholder="詳細描述物品內容 (如顏色、材質、庫存狀態)..." class="input-style h-16 mb-2"></textarea>
+            <div class="text-[10px] text-gray-400 mb-2">※ 照片上傳功能需串接雲端空間，目前僅作資料標註。</div>
+            <button onclick="saveShopping()" class="w-full btn-action bg-pink-500 text-white">紀錄購物</button>
+        </section>
+
+        <section class="card">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold">歷史查詢</h2>
+                <input type="month" id="search-month" onchange="renderList()" class="border p-1 rounded text-sm">
+            </div>
+            <div id="record-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
+        </section>
     </main>
-
-    <section class="p-4 border-t">
-        <div class="flex justify-between items-center mb-2">
-            <h2 class="font-bold">歷史清單 (本月)</h2>
-            <input type="month" id="query-month" onchange="renderList()" class="border text-sm p-1 rounded">
-        </div>
-        <div id="record-list" class="space-y-2 text-sm">
-            </div>
-    </section>
 </div>
 
 <script>
-    let records = JSON.parse(localStorage.getItem('life_logs')) || [];
+    let logs = JSON.parse(localStorage.getItem('my_life_data_3')) || [];
+    let timerStart = null;
+    const budgetMap = {
+        "約會": 4500, "飲食": 7500, "油費/交通": 700, "水電瓦斯電費公費": 1500,
+        "手機": 900, "其餘家用開銷": 800, "醫療": 1600, "運動": 6000,
+        "物理治療/美甲/醫美": 1900, "上課": 3200, "購物": 2400, "保險稅等費用": 3500
+    };
 
-    // 初始化時間
-    document.getElementById('field-time').value = new Date().toISOString().slice(0, 16);
-
-    function saveRecord() {
-        const record = {
-            id: Date.now(),
-            time: document.getElementById('field-time').value,
-            cat: document.getElementById('main-cat').value,
-            content: document.getElementById('field-content').value,
-            value: parseFloat(document.getElementById('field-value').value) || 0,
-            unit: document.getElementById('field-unit').value,
-            note: document.getElementById('field-note').value
-        };
-        
-        records.unshift(record);
-        localStorage.setItem('life_logs', JSON.stringify(records));
-        updateDashboard();
-        renderList();
-        alert('儲存成功！');
+    function addWater() {
+        logs.push({ type: '健康', sub: '飲水', val: 250, unit: 'ml', time: new Date().toISOString() });
+        saveAndRefresh();
     }
 
-    function updateDashboard() {
-        const today = new Date().toISOString().split('T')[0];
-        const todayRecords = records.filter(r => r.time.startsWith(today));
-        
-        const water = todayRecords.filter(r => r.content.includes('水') || r.unit === 'ml').reduce((a, b) => a + b.value, 0);
-        const sport = todayRecords.filter(r => r.cat === '生活' && r.unit === 'min').reduce((a, b) => a + b.value, 0);
-        const sleep = todayRecords.filter(r => r.cat === '生活' && r.unit === 'hr').reduce((a, b) => a + b.value, 0);
+    function toggleTimer() {
+        const btn = document.getElementById('timer-btn');
+        if (!timerStart) {
+            timerStart = new Date();
+            btn.innerText = "結束並結算";
+            btn.classList.replace('bg-green-500', 'bg-red-500');
+            document.getElementById('timer-display').innerText = "計時中: " + timerStart.toLocaleTimeString();
+        } else {
+            const end = new Date();
+            const diffMs = end - timerStart;
+            const mins = Math.floor(diffMs / 60000);
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            const timeStr = `${h}hr ${m}min`;
+            
+            document.getElementById('health-note').value += ` [時段: ${timerStart.getHours()}:${timerStart.getMinutes()}-${end.getHours()}:${end.getMinutes()} 共 ${timeStr}]`;
+            
+            timerStart = null;
+            btn.innerText = "開始計時";
+            btn.classList.replace('bg-red-500', 'bg-green-500');
+            document.getElementById('timer-display').innerText = "計時結束！已填入備註。";
+        }
+    }
 
-        document.getElementById('dash-water').innerText = water + ' ml';
-        document.getElementById('dash-sport').innerText = sport + ' min';
-        document.getElementById('dash-sleep').innerText = sleep + ' hr';
+    function saveHealth() {
+        const sub = document.getElementById('health-sub').value;
+        let note = document.getElementById('health-note').value;
+
+        // 生理期自動結算邏輯
+        if (sub === '生理期-結束') {
+            const lastStart = logs.slice().reverse().find(l => l.sub === '生理期-開始');
+            if (lastStart) {
+                const days = Math.ceil((new Date() - new Date(lastStart.time)) / (1000 * 60 * 60 * 24));
+                note += ` (本週期共 ${days} 天)`;
+            }
+        }
+
+        logs.push({
+            type: '健康',
+            sub: sub,
+            food: document.getElementById('health-food').value,
+            symptom: document.getElementById('health-symptom').value,
+            note: note,
+            time: new Date().toISOString()
+        });
+        saveAndRefresh();
+        clearInputs(['health-food', 'health-symptom', 'health-note']);
+    }
+
+    function saveFinance() {
+        const sub = document.getElementById('fin-sub').value;
+        logs.push({
+            type: '支出',
+            sub: sub,
+            val: parseFloat(document.getElementById('fin-amount').value) || 0,
+            payBy: document.getElementById('fin-pay').value,
+            item: document.getElementById('fin-item').value,
+            time: new Date().toISOString()
+        });
+        saveAndRefresh();
+        updateBudgetInfo();
+        clearInputs(['fin-amount', 'fin-item']);
+    }
+
+    function saveShopping() {
+        logs.push({
+            type: '購物',
+            sub: document.getElementById('buy-sub').value,
+            item: document.getElementById('buy-name').value,
+            val: parseFloat(document.getElementById('buy-amount').value) || 0,
+            shop: document.getElementById('buy-shop').value,
+            note: document.getElementById('buy-note').value,
+            time: new Date().toISOString()
+        });
+        saveAndRefresh();
+        clearInputs(['buy-name', 'buy-amount', 'buy-shop', 'buy-note']);
+    }
+
+    function updateBudgetInfo() {
+        const sub = document.getElementById('fin-sub').value;
+        const budget = budgetMap[sub] || 0;
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const spent = logs.filter(l => l.type === '支出' && l.sub === sub && l.time.startsWith(currentMonth))
+                          .reduce((sum, curr) => sum + curr.val, 0);
+        const left = budget - spent;
+        const el = document.getElementById('budget-text');
+        el.innerText = `本月剩餘預算: $ ${left}`;
+        el.className = left < 0 ? "text-sm font-bold text-red-600" : "text-sm font-bold text-green-700";
+    }
+
+    function saveAndRefresh() {
+        localStorage.setItem('my_life_data_3', JSON.stringify(logs));
+        updateDash();
+        renderList();
+    }
+
+    function updateDash() {
+        const today = new Date().toISOString().split('T')[0];
+        const month = new Date().toISOString().slice(0, 7);
+        const todayLogs = logs.filter(l => l.time.startsWith(today));
+        
+        document.getElementById('dash-water').innerText = todayLogs.filter(l => l.sub === '飲水').reduce((s, c) => s + c.val, 0) + 'ml';
+        
+        // 運動 (抓取備註中的 min)
+        const sportMin = todayLogs.filter(l => l.sub === '運動').reduce((s, c) => {
+            const match = c.note.match(/共 (\d+) min/);
+            return s + (match ? parseInt(match[1]) : 0);
+        }, 0);
+        document.getElementById('dash-sport').innerText = sportMin + 'm';
+
+        // 預算總覽百分比
+        const totalBudget = Object.values(budgetMap).reduce((a,b)=>a+b);
+        const totalSpent = logs.filter(l => l.type === '支出' && l.time.startsWith(month)).reduce((s, c) => s + c.val, 0);
+        const percent = Math.max(0, Math.floor(((totalBudget - totalSpent) / totalBudget) * 100));
+        document.getElementById('dash-budget').innerText = percent + '%';
     }
 
     function renderList() {
-        const queryMonth = document.getElementById('query-month').value || new Date().toISOString().slice(0, 7);
-        const listEl = document.getElementById('record-list');
-        listEl.innerHTML = '';
-
-        records.filter(r => r.time.startsWith(queryMonth)).forEach(r => {
+        const month = document.getElementById('search-month').value || new Date().toISOString().slice(0, 7);
+        const list = document.getElementById('record-list');
+        list.innerHTML = '';
+        
+        logs.filter(l => l.time.startsWith(month)).reverse().forEach(l => {
             const div = document.createElement('div');
-            div.className = "p-3 bg-white border-b flex justify-between";
+            div.className = "text-xs p-3 bg-gray-50 rounded-lg border-l-4 " + (l.type==='健康'?'border-indigo-400':l.type==='支出'?'border-orange-400':'border-pink-400');
             div.innerHTML = `
-                <div>
-                    <p class="font-bold text-indigo-700">${r.cat} - ${r.content}</p>
-                    <p class="text-xs text-gray-400">${r.time}</p>
-                    <p class="text-sm text-gray-600">${r.note}</p>
+                <div class="flex justify-between font-bold">
+                    <span>${l.time.slice(5,16)} ${l.sub}</span>
+                    <span class="text-indigo-600">${l.val ? '$'+l.val : ''}</span>
                 </div>
-                <div class="text-right">
-                    <p class="font-bold">${r.value} ${r.unit}</p>
-                </div>
+                <div class="text-gray-500 mt-1">${l.food || l.item || ''} ${l.symptom || ''}</div>
+                <div class="text-[10px] text-gray-400 italic">${l.note || ''} ${l.payBy || ''}</div>
             `;
-            listEl.appendChild(div);
+            list.appendChild(div);
         });
     }
 
-    function exportToExcel() {
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-        csvContent += "時間,類別,內容,數值,單位,備註\n";
-        
-        records.forEach(r => {
-            csvContent += `${r.time},${r.cat},${r.content},${r.value},${r.unit},${r.note.replace(/\n/g, ' ')}\n`;
-        });
+    function clearInputs(ids) {
+        ids.forEach(id => document.getElementById(id).value = '');
+    }
 
-        const encodedUri = encodeURI(csvContent);
+    function exportData() {
+        let csv = "\uFEFF工作表(請依此欄篩選),時間,大類,子類,金額/數值,攝取內容,症狀/品項,備註/支付/店家\n";
+        logs.forEach(l => {
+            if (l.type === '健康') csv += `健康生活,${l.time},${l.type},${l.sub},${l.val || ''},"${l.food || ''}","${l.symptom || ''}","${l.note || ''}"\n`;
+            if (l.type === '支出') csv += `財務支出,${l.time},${l.type},${l.sub},${l.val},"${l.item || ''}",,"${l.payBy || ''}"\n`;
+            if (l.type === '購物') csv += `購物紀錄,${l.time},${l.type},${l.sub},${l.val},"${l.item || ''}",,"${l.shop || ''} ${l.note || ''}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `生活紀錄_${new Date().toLocaleDateString()}.csv`);
-        document.body.appendChild(link);
+        link.href = URL.createObjectURL(blob);
+        link.download = `生活管理3.0匯出_${new Date().toISOString().slice(0,10)}.csv`;
         link.click();
     }
 
-    // 啟動執行
-    updateDashboard();
-    renderList();
+    renderList(); updateDash(); updateBudgetInfo();
 </script>
 </body>
 </html>
