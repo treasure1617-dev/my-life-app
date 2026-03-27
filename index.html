@@ -3,289 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>生活管理 4.0</title>
+    <title>極簡生活 5.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f8fafc; color: #334155; }
-        .section-title { @apply text-lg font-bold mb-4 flex items-center border-l-4 border-indigo-500 pl-3; }
-        .card { @apply bg-white p-6 rounded-3xl shadow-sm mb-6 border border-gray-100; }
-        .input-label { @apply block text-sm font-bold text-gray-600 mb-2; }
-        .input-style { @apply w-full border border-gray-200 p-3 rounded-xl bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-indigo-100 transition text-base; }
-        .btn-main { @apply w-full py-4 rounded-2xl font-bold text-lg shadow-md active:scale-95 transition mt-2; }
-        .time-picker { @apply text-xs text-indigo-500 mb-2 underline block text-right; }
+        body { background-color: #fcfcfd; color: #1e293b; letter-spacing: 0.02em; }
+        .section-card { @apply bg-white p-8 rounded-[40px] shadow-sm mb-8 border border-gray-50; }
+        .main-title { @apply text-2xl font-black mb-6 pl-2; }
+        .input-wrapper { @apply mb-6; }
+        .label-text { @apply block text-sm font-bold text-slate-500 mb-2 ml-1; }
+        .input-field { @apply w-full border-none bg-slate-100 p-4 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-100 outline-none transition-all text-lg; }
+        .btn-submit { @apply w-full py-5 rounded-3xl font-black text-xl shadow-lg active:scale-95 transition-transform; }
+        .time-box { @apply flex items-center justify-between bg-indigo-50 p-4 rounded-2xl mb-6 text-indigo-600 font-bold; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-32 pt-8">
 
-<div class="max-w-md mx-auto px-4 pt-6">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-black text-slate-800">Hi, 祝你有好的一天</h1>
-            <p class="text-sm text-slate-500">記錄當下的每一刻</p>
+<div class="max-w-md mx-auto px-6">
+    <h1 class="main-title text-indigo-950">我的生活誌</h1>
+
+    <section class="section-card">
+        <div class="flex items-center mb-6">
+            <span class="text-3xl mr-2">🌿</span>
+            <h2 class="text-xl font-black text-emerald-700">健康生活</h2>
         </div>
-        <button onclick="exportData()" class="bg-white p-2 rounded-full shadow-sm border border-gray-100">📥</button>
-    </div>
-
-    <section class="card">
-        <h2 class="section-title text-indigo-600">🩺 健康生活</h2>
-        <input type="datetime-local" id="health-time" class="time-picker bg-transparent border-none">
         
-        <div class="mb-4">
-            <label class="input-label">類別</label>
-            <select id="health-sub" class="input-style" onchange="checkPeriodType()">
+        <div class="time-box">
+            <span>📅 紀錄時間</span>
+            <input type="datetime-local" id="health-time" class="bg-transparent outline-none text-sm">
+        </div>
+
+        <div class="input-wrapper">
+            <label class="label-text">當下狀態</label>
+            <select id="health-sub" class="input-field" onchange="checkPeriod()">
                 <option>飲食</option><option>看診</option><option>運動</option>
                 <option>睡眠</option><option>排便</option><option>體重</option>
                 <option>生理期-開始</option><option>生理期-結束</option><option>其他</option>
             </select>
         </div>
 
-        <div class="space-y-4">
-            <div>
-                <label class="input-label">攝取內容</label>
-                <input type="text" id="health-food" placeholder="吃了什麼？喝了多少水？" class="input-style">
-            </div>
-            <div>
-                <label class="input-label">症狀與感受</label>
-                <input type="text" id="health-symptom" placeholder="例如：胃脹氣、牙痛、疲倦" class="input-style">
-            </div>
-            <div>
-                <label class="input-label">客觀內容</label>
-                <textarea id="health-note" placeholder="運動項目、藥單內容、診所資訊..." class="input-style h-24"></textarea>
-            </div>
+        <div class="input-wrapper">
+            <label class="label-text">吃進去的食物/飲水</label>
+            <input type="text" id="health-food" placeholder="例如：溫開水 500ml" class="input-field">
         </div>
 
-        <div class="flex gap-3 mt-4">
-            <button id="timer-btn" onclick="toggleTimer()" class="flex-1 py-3 bg-emerald-100 text-emerald-700 rounded-xl font-bold">開始計時</button>
-            <button onclick="saveHealth()" class="flex-[2] btn-main bg-indigo-600 text-white">儲存紀錄</button>
+        <div class="input-wrapper">
+            <label class="label-text">身體症狀與感受</label>
+            <input type="text" id="health-symptom" placeholder="例如：胃脹氣、牙痛" class="input-field">
         </div>
-        <p id="timer-display" class="text-center text-xs mt-2 text-slate-400"></p>
+
+        <div class="input-wrapper">
+            <label class="label-text">客觀內容備註</label>
+            <textarea id="health-note" placeholder="運動內容、藥單資訊..." class="input-field h-32"></textarea>
+        </div>
+
+        <div class="flex gap-4">
+            <button id="timer-btn" onclick="toggleTimer()" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold">計時</button>
+            <button onclick="saveHealth()" class="flex-[2] btn-submit bg-emerald-600 text-white">儲存紀錄</button>
+        </div>
+        <p id="timer-display" class="text-center text-xs mt-3 text-slate-400"></p>
     </section>
 
-    <section class="card">
-        <h2 class="section-title text-amber-600">💰 生活開銷</h2>
-        <input type="datetime-local" id="fin-time" class="time-picker bg-transparent border-none">
+    <section class="section-card">
+        <div class="flex items-center mb-6">
+            <span class="text-3xl mr-2">💳</span>
+            <h2 class="text-xl font-black text-indigo-700">生活開銷</h2>
+        </div>
 
-        <div class="mb-4">
-            <label class="input-label">消費類別</label>
-            <select id="fin-sub" class="input-style" onchange="updateBudgetInfo()">
-                <option value="約會">約會</option><option value="飲食">飲食</option>
-                <option value="油費/交通">油費/交通</option><option value="水電瓦斯電費公費">水電瓦斯電費公費</option>
-                <option value="手機">手機</option><option value="其餘家用開銷">其餘家用開銷</option>
-                <option value="醫療">醫療</option><option value="運動">運動</option>
-                <option value="物理治療/美甲/醫美">物理治療/美甲/醫美</option>
-                <option value="上課">上課</option><option value="日用品">日用品</option>
-                <option value="購物">購物</option><option value="保險稅等費用">保險稅等費用</option>
-                <option value="其他">其他</option>
+        <div class="time-box">
+            <span>📅 消費時間</span>
+            <input type="datetime-local" id="fin-time" class="bg-transparent outline-none text-sm">
+        </div>
+
+        <div class="input-wrapper">
+            <label class="label-text">消費類別</label>
+            <select id="fin-sub" class="input-field" onchange="updateBudget()">
+                <option>約會</option><option>飲食</option><option>油費/交通</option>
+                <option>水電瓦斯電費公費</option><option>手機</option><option>其餘家用開銷</option>
+                <option>醫療</option><option>運動</option><option>物理治療/美甲/醫美</option>
+                <option>上課</option><option>日用品</option><option>購物</option>
+                <option>保險稅等費用</option><option>其他</option>
             </select>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 gap-6 mb-6">
             <div>
-                <label class="input-label">金額</label>
-                <input type="number" id="fin-amount" class="input-style" placeholder="0">
+                <label class="label-text">支出金額</label>
+                <input type="number" id="fin-amount" class="input-field" placeholder="$ 0">
             </div>
             <div>
-                <label class="input-label">支付方式</label>
-                <select id="fin-pay" class="input-style">
-                    <option>現金</option><option>LINE Pay</option><option>Apple Pay</option><option>台灣Pay</option><option>街口</option>
+                <label class="label-text">支付方式</label>
+                <select id="fin-pay" class="input-field">
+                    <option>現金</option><option>LINE Pay</option><option>Apple Pay</option>
+                    <option>台灣Pay</option><option>街口</option>
                 </select>
             </div>
         </div>
 
-        <div class="mb-4">
-            <label class="input-label">項目明細與說明</label>
-            <input type="text" id="fin-item" placeholder="買了什麼？備註說明..." class="input-style">
+        <div class="input-wrapper">
+            <label class="label-text">項目明細與說明</label>
+            <input type="text" id="fin-item" placeholder="具體買了什麼？" class="input-field">
         </div>
 
-        <div id="budget-left" class="text-center p-3 rounded-2xl bg-slate-50 text-sm font-bold mb-4"></div>
-        <button onclick="saveFinance()" class="btn-main bg-amber-500 text-white">儲存支出</button>
+        <div id="budget-left" class="bg-indigo-50 p-4 rounded-2xl text-center font-bold text-indigo-600 mb-6"></div>
+        <button onclick="saveFinance()" class="btn-submit bg-indigo-600 text-white">儲存開銷</button>
     </section>
 
-    <section class="card">
-        <h2 class="section-title text-rose-500">🛍️ 購物紀錄</h2>
-        <input type="datetime-local" id="buy-time" class="time-picker bg-transparent border-none">
+    <section class="section-card">
+        <div class="flex items-center mb-6">
+            <span class="text-3xl mr-2">🛍️</span>
+            <h2 class="text-xl font-black text-rose-600">購物紀錄</h2>
+        </div>
 
-        <div class="mb-4">
-            <label class="input-label">物品類別</label>
-            <select id="buy-sub" class="input-style">
-                <option>日常用品</option><option>衣服</option><option>包包</option><option>飾品</option>
-                <option>鞋子</option><option>化妝品</option><option>保養品</option><option>手作材料</option>
-                <option>商品庫存</option><option>報名的課程</option><option>其他</option>
+        <div class="time-box" style="background-color: #fff1f2; color: #e11d48;">
+            <span>📅 購買時間</span>
+            <input type="datetime-local" id="buy-time" class="bg-transparent outline-none text-sm">
+        </div>
+
+        <div class="input-wrapper">
+            <label class="label-text">物品類別</label>
+            <select id="buy-sub" class="input-field">
+                <option>日常用品</option><option>衣服</option><option>包包</option>
+                <option>飾品</option><option>鞋子</option><option>化妝品</option>
+                <option>保養品</option><option>手作材料</option><option>商品庫存</option>
+                <option>報名的課程</option><option>其他</option>
             </select>
         </div>
 
-        <div class="space-y-4">
-            <div>
-                <label class="input-label">品項名稱</label>
-                <input type="text" id="buy-name" class="input-style" placeholder="物品名稱">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="input-label">金額</label>
-                    <input type="number" id="buy-amount" class="input-style" placeholder="$">
-                </div>
-                <div>
-                    <label class="input-label">店家</label>
-                    <input type="text" id="buy-shop" class="input-style" placeholder="購買地點">
-                </div>
-            </div>
-            <div>
-                <label class="input-label">詳細說明</label>
-                <textarea id="buy-note" placeholder="詳細描述物品內容 (材質、尺寸、數量)..." class="input-style h-24"></textarea>
-            </div>
-            <div>
-                <label class="input-label">照片備註/連結</label>
-                <input type="text" id="buy-photo" placeholder="貼上照片連結或備註照片編號" class="input-style">
-            </div>
+        <div class="input-wrapper">
+            <label class="label-text">品項名稱</label>
+            <input type="text" id="buy-name" class="input-field" placeholder="請輸入物品名稱">
         </div>
 
-        <button onclick="saveShopping()" class="btn-main bg-rose-500 text-white">紀錄購物</button>
-    </section>
-
-    <section class="card">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="font-bold">歷史查詢</h2>
-            <input type="month" id="search-month" onchange="renderList()" class="border p-2 rounded-xl text-sm">
+        <div class="input-wrapper">
+            <label class="label-text">金額</label>
+            <input type="number" id="buy-amount" class="input-field" placeholder="$">
         </div>
-        <div id="record-list" class="space-y-4"></div>
-    </section>
-</div>
 
-<script>
-    let logs = JSON.parse(localStorage.getItem('my_life_data_4')) || [];
-    let timerStart = null;
-    const budgetMap = {
-        "約會": 4500, "飲食": 7500, "油費/交通": 700, "水電瓦斯電費公費": 1500,
-        "手機": 900, "其餘家用開銷": 800, "醫療": 1600, "運動": 6000,
-        "物理治療/美甲/醫美": 1900, "上課": 3200, "日用品": 2400, "購物": 2400, "保險稅等費用": 3500
-    };
+        <div class="input-wrapper">
+            <label class="label-text">店家</label>
+            <input type="text" id="buy-shop" class="input-field" placeholder="購買通路/店名">
+        </div>
 
-    // 初始化所有時間欄位為現在
-    function initTimes() {
-        const now = new Date().toISOString().slice(0, 16);
-        document.getElementById('health-time').value = now;
-        document.getElementById('fin-time').value = now;
-        document.getElementById('buy-time').value = now;
-    }
-
-    function toggleTimer() {
-        const btn = document.getElementById('timer-btn');
-        if (!timerStart) {
-            timerStart = new Date();
-            btn.innerText = "結束計時";
-            btn.className = "flex-1 py-3 bg-rose-100 text-rose-700 rounded-xl font-bold";
-            document.getElementById('timer-display').innerText = "計時開始: " + timerStart.toLocaleTimeString();
-        } else {
-            const end = new Date();
-            const diffMs = end - timerStart;
-            const mins = Math.floor(diffMs / 60000);
-            const hrs = (mins / 60).toFixed(1);
-            document.getElementById('health-note').value += ` [計時: ${mins}分鐘 / ${hrs}小時]`;
-            timerStart = null;
-            btn.innerText = "開始計時";
-            btn.className = "flex-1 py-3 bg-emerald-100 text-emerald-700 rounded-xl font-bold";
-            document.getElementById('timer-display').innerText = "已結算至說明。";
-        }
-    }
-
-    function saveHealth() {
-        const sub = document.getElementById('health-sub').value;
-        let note = document.getElementById('health-note').value;
-        if (sub === '生理期-結束') {
-            const lastStart = logs.slice().reverse().find(l => l.sub === '生理期-開始');
-            if (lastStart) {
-                const days = Math.ceil((new Date(document.getElementById('health-time').value) - new Date(lastStart.time)) / (1000 * 60 * 60 * 24));
-                note += ` (週期共 ${days} 天)`;
-            }
-        }
-        logs.push({
-            type: '健康', sub, food: document.getElementById('health-food').value,
-            symptom: document.getElementById('health-symptom').value, note,
-            time: document.getElementById('health-time').value
-        });
-        saveAndRefresh();
-        alert('健康紀錄已儲存');
-    }
-
-    function saveFinance() {
-        logs.push({
-            type: '支出', sub: document.getElementById('fin-sub').value,
-            val: parseFloat(document.getElementById('fin-amount').value) || 0,
-            payBy: document.getElementById('fin-pay').value,
-            item: document.getElementById('fin-item').value,
-            time: document.getElementById('fin-time').value
-        });
-        saveAndRefresh();
-        alert('支出已儲存');
-    }
-
-    function saveShopping() {
-        logs.push({
-            type: '購物', sub: document.getElementById('buy-sub').value,
-            item: document.getElementById('buy-name').value,
-            val: parseFloat(document.getElementById('buy-amount').value) || 0,
-            shop: document.getElementById('buy-shop').value,
-            note: document.getElementById('buy-note').value,
-            photo: document.getElementById('buy-photo').value,
-            time: document.getElementById('buy-time').value
-        });
-        saveAndRefresh();
-        alert('購物紀錄已儲存');
-    }
-
-    function updateBudgetInfo() {
-        const sub = document.getElementById('fin-sub').value;
-        const budget = budgetMap[sub] || 0;
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const spent = logs.filter(l => l.type === '支出' && l.sub === sub && l.time.startsWith(currentMonth))
-                          .reduce((sum, curr) => sum + curr.val, 0);
-        const el = document.getElementById('budget-left');
-        const left = budget - spent;
-        if (budget === 0) { el.innerText = "此類別無預算設定"; return; }
-        el.innerText = `剩餘預算: $ ${left}`;
-        el.className = `text-center p-3 rounded-2xl text-sm font-bold mb-4 ${left < 0 ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`;
-    }
-
-    function saveAndRefresh() {
-        localStorage.setItem('my_life_data_4', JSON.stringify(logs));
-        renderList();
-        initTimes();
-    }
-
-    function renderList() {
-        const month = document.getElementById('search-month').value || new Date().toISOString().slice(0, 7);
-        const list = document.getElementById('record-list');
-        list.innerHTML = '';
-        logs.filter(l => l.time.startsWith(month)).reverse().forEach(l => {
-            const div = document.createElement('div');
-            div.className = "p-4 bg-white rounded-2xl shadow-sm border border-gray-50";
-            div.innerHTML = `
-                <div class="flex justify-between text-xs text-slate-400 mb-1">
-                    <span>${l.time.replace('T', ' ')}</span>
-                    <span class="font-bold text-indigo-500">${l.sub}</span>
-                </div>
-                <div class="font-bold">${l.val ? '$'+l.val : ''} ${l.food || l.item || ''}</div>
-                <div class="text-sm text-slate-500">${l.symptom || l.note || ''}</div>
-            `;
-            list.appendChild(div);
-        });
-    }
-
-    function exportData() {
-        let csv = "\uFEFF工作表,時間,類別,項目,數值,內容1,內容2,說明/支付/照片\n";
-        logs.forEach(l => {
-            if (l.type === '健康') csv += `健康生活,${l.time},${l.sub},,${l.val||''},"${l.food||''}","${l.symptom||''}","${l.note||''}"\n`;
-            if (l.type === '支出') csv += `生活開銷,${l.time},${l.sub},"${l.item||''}",${l.val},,,${l.payBy||''}\n`;
-            if (l.type === '購物') csv += `購物紀錄,${l.time},${l.sub},"${l.item||''}",${l.val},"${l.shop||''}","${l.photo||''}","${l.note||''}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `生活紀錄4.0_${new Date().toLocaleDateString()}.csv`;
-        a.click();
-    }
-
-    initTimes(); renderList(); updateBudgetInfo();
-</script>
-</body>
-</html>
+        <div class="input-wrapper">
+            <label class="label-text">詳細說明 (尺寸、材質、庫存...)</label>
+            <textarea id="buy-note
